@@ -1,0 +1,56 @@
+using System.Collections;
+using System.Collections.Generic;
+using Unity.VisualScripting;
+using UnityEngine;
+
+public class pink : MonoBehaviour
+{
+    public float fuerzaSalto;
+    public float velocidadMovimiento = 5f;
+    private Rigidbody2D rigidbody2D;
+    private Animator animator;
+    // Start is called before the first frame update
+    void Start()
+    {
+        animator = GetComponent<Animator>();
+        rigidbody2D = GetComponent<Rigidbody2D>();
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        float horizontalInput = 0f;
+
+        if(Input.GetKey(KeyCode.A))
+        {
+            horizontalInput = -1f; //mueve a la izquierda
+            transform.localScale = new Vector3(-1,1,1); //voltear sprite a la izquierda
+        }else if (Input.GetKey(KeyCode.D))
+        {
+
+            horizontalInput = 1f; // Mover hacia la derecha
+            transform.localScale = new Vector3(1, 1, 1); // Voltear sprite a la derecha
+        }
+
+        // Aplicar movimiento
+        rigidbody2D.velocity = new Vector2(horizontalInput * velocidadMovimiento, rigidbody2D.velocity.y);
+
+        // Actualizar la animación de caminar
+        animator.SetBool("is_walking", horizontalInput != 0);
+        
+        //salto con barra espaciadora
+        if(Input.GetKeyDown(KeyCode.Space)){
+            animator.SetBool("is_jumping",true);
+            rigidbody2D.AddForce(new Vector2(0,fuerzaSalto));
+        }
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision){
+        if(collision.gameObject.tag == "Suelo"){
+
+            animator.SetBool("is_jumping",false);
+
+        }
+
+    }
+}
